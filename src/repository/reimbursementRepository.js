@@ -16,7 +16,17 @@ let reimbursementRepository = {
     },
     checkExistingDraftReimbursement : (employeeId) => {
         return new Promise( (resolve, reject) => {
-            
+            let query = `
+            SELECT * FROM flex_reimbursement 
+            WHERE employee_id = ${employeeId} && status = 'Draft'
+            `
+            connectionPool.query(query, (error, results, fields) => {
+                if (error) {
+                    reject (error)
+                } else {
+                    resolve (results);
+                }
+            });
         });
     }
 }

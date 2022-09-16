@@ -1,5 +1,3 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const connectionPool = require('../config/mysqlConfig');
 
 let jwtRepository =  {
@@ -19,21 +17,6 @@ let jwtRepository =  {
                 }
             })
         }); 
-    },
-
-    validatePassword : async (passwordFromRequest, passwordFromDatabase) => {
-        try {
-        return bcrypt.compare(passwordFromRequest, passwordFromDatabase).then((result) => result);
-        } catch (error) {
-            //double check what should be sent, error or 'false'
-            return error;
-        }
-    },
-    getAudienceFromToken : (token) => jwt.decode(token)["aud"],
-
-    getUserNameFromToken : (token) => {
-        let userName = jwt.decode(token)["sub"];
-        return userName;
     },
     getScopesFromRole : async (roleName) => {
         return new Promise((resolve, reject) => {
@@ -57,30 +40,10 @@ let jwtRepository =  {
         });
     },
 
-    generateToken : async (userName) => {
-        try {
-            const user = await jwtRepository.getUserByUserName(userName);
-            const roles = await jwtRepository.getScopesFromRole(user[0].role_name);
-            const options = {
-            algorithm: process.env.ALGORITHM,
-            expiresIn: process.env.EXPIRY,
-            issuer: process.env.ISSUER,
-            subject: userName,
-            audience : roles
-        };
-        return jwt.sign({}, process.env.SECRET, options);
-        } catch (error) {
-            console.log(`Error from generateToken :${error}`)
-            return error;
-        }
-    },
-
-    blockToken : async (token) => {
+    blockToken : async (user, token) => {
+        console.log("start of repo")
         try{
-            let userName = jwtRepository.getUserNameFromToken(token);
-            let user = await jwtRepository.getUserByUserName(userName)
             return new Promise((resolve, reject) => {
-                    console.log(user)
                     let userAccountId = user[0].account_id;
                     let query = `
                     INSERT INTO blocked_token (token, account_id) VALUES ('${token}', ${userAccountId});`;
@@ -91,26 +54,21 @@ let jwtRepository =  {
                         } else {
                             resolve(results.affectedRows);
                         }
-                    });        });
+                    });        
+                });
         } catch (error){
             console.log(error);
             reject(error)
         }
     },
-    verifyIfBlockedToken : async (token) => {
+    getBlockedToken : async (token) => {
         return new Promise((resolve, reject) =>{
             let query = `SELECT token FROM blocked_token WHERE token = '${token}';`;
             connectionPool.query(query, (error, results, fields) =>{
                 if(error){
-                    reject(error);
+                    reject (error);
                 }else{
-                    if (results==''){
-                        console.log("valid pa")
-                        resolve(false);
-                    } else{
-                        console.log("ekis na")
-                        resolve(true);
-                    }
+                    resolve (results);
                 }
             })
         }); 
