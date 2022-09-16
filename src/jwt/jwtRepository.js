@@ -99,7 +99,7 @@ let jwtRepository =  {
     },
     verifyIfBlockedToken : async (token) => {
         return new Promise((resolve, reject) =>{
-            query = `SELECT token FROM blocked_token WHERE token = '${token}';`;
+            let query = `SELECT token FROM blocked_token WHERE token = '${token}';`;
             connectionPool.query(query, (error, results, fields) =>{
                 if(error){
                     reject(error);
