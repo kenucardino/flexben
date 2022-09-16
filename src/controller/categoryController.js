@@ -1,11 +1,10 @@
-const { verifyToken } = require('../middleware/jwtMiddleware');
-const categoryRepository = require('../repository/categoryRepository');
+const categoryService = require('../service/categoryService');
 const constants = require('../constants');
 const util = require('../util/util')
 
 exports.getAllCategories = async (req, res) =>{
     try {
-        let categories = await categoryRepository.getAllCateogories();
+        let categories = await categoryService.getAllCategories();
         res.send(util.getResponseBuilder("OK", "Categories fetched", categories));
     } catch (error) {
         console.log(error)

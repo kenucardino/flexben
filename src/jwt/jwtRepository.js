@@ -57,7 +57,7 @@ let jwtRepository =  {
         });
     },
 
-    generateToken : async (userName) =>{
+    generateToken : async (userName) => {
         try {
             const user = await jwtRepository.getUserByUserName(userName);
             const roles = await jwtRepository.getScopesFromRole(user[0].role_name);
@@ -116,20 +116,6 @@ let jwtRepository =  {
         }); 
     }
 }
-// async function callVerifyBlocked(){
-//     jwtRepository.verifyIfBlockedToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NjMyOTM5NzUsImV4cCI6MTY2MzI5NzU3NSwiYXVkIjpbInRlc3Rfc2NvcGUxIiwidGVzdF9zY29wZTIiXSwiaXNzIjoiSk9HUkFUIiwic3ViIjoiamFuLmJlY2tAcG9pbnR3ZXN0LmNvbS5waCJ9.umVZ4RPyaKmxEukXTu3wDzbsRJxcPvUIT_OacicrX68");
-// }
-// async function callVerifyBlocked(){
-//     jwtRepository.verifyIfBlockedToken();
-// }
 
-// callVerifyBlocked()
-
-// async function callScopes(){
-//     let scopes = await jwtRepository.getScopesFromRole('employee');
-//     console.log(scopes)
-// }
-
-// callScopes()
 
 module.exports = jwtRepository;

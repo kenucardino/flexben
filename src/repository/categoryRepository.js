@@ -1,7 +1,7 @@
 const connectionPool = require('../config/mysqlConfig');
 
 let categoryRepository = {
-    getAllCateogories : async () => {
+    get : async () => {
         return new Promise( (resolve, reject) => {
             let query = `SELECT * FROM category`;
             connectionPool.query(query, (error, results, fields) => {
