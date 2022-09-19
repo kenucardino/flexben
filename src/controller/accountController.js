@@ -1,10 +1,12 @@
 const jwtService = require('../jwt/jwtService');
+const constants = require('../constants')
 
 exports.login =  async (req, res) => {
     try {
         let userName = req.body.userName;
         let password = req.body.password;
         let user = await jwtService.getUserByUserName(userName);
+        
         if(user && !user.length == 0){
             if (await jwtService.validatePassword(password, user[0].password)){
                 let token = await jwtService.generateToken(userName)
@@ -31,7 +33,6 @@ exports.logout = async (req, res) => {
                     message : "Logged out"
                 }
             })
-            console.log("end of controller")
         } else {
             res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR);
         }

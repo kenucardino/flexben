@@ -4,7 +4,7 @@ let jwtRepository =  {
     getUserByUserName : async  (userName) => { 
         return new Promise((resolve, reject) =>{
             connectionPool.query(`
-            SELECT a.account_id, e.email, a.password, r.name AS role_name   
+            SELECT a.account_id, e.email, a.password, e.employee_id, r.name AS role_name   
             FROM account AS a
             JOIN employee AS e ON a.employee_id = e.employee_id
             JOIN role AS r ON e.role_id = r.role_id
@@ -41,7 +41,6 @@ let jwtRepository =  {
     },
 
     blockToken : async (user, token) => {
-        console.log("start of repo")
         try{
             return new Promise((resolve, reject) => {
                     let userAccountId = user[0].account_id;

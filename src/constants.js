@@ -3,6 +3,14 @@ module.exports.JWT_OPTIONS = {
     STAFF_AUDIENCE : ["SEARCH_ALL_FILM", "SEARCH_ACTOR", "ADD_FILM", "UPDATE_FILM", "DELETE_FILM", "ADD_ACTOR", "UPDATE_ACTOR", "DELETE_ACTOR", "SEARCH_CUSTOMER", "SEARCH_RENTAL", "UPDATE_RENTAL"]
 }
 
+module.exports.PAYLOAD_ERRORS = {
+    INVALID_AMOUNT : "INVALID_AMOUNT", 
+    INVALID_DATE : "INVALID_DATE", 
+    INVALID_CUT_OFF : "INVALID_CUT_OFF", 
+    INTERNAL_SERVER_ERROR : "INTERNAL_SERVER_ERROR"
+}
+
+
 module.exports.AUDIENCE = {
     ADD_FILM : "ADD_FILM",
     UPDATE_FILM : "UPDATE_FILM",
@@ -82,6 +90,33 @@ module.exports.ERR_RESPONSE = {
         "error" : {
             "code" : "NOT_FOUND",
             "message" : "Object searching not found."
+
+        }
+    },INVALID_CUT_OFF : {
+        "status" : 400,
+        "statusText" : "BAD REQUEST",
+        "message" : "Invalid cutoff, check chosen cutoff if active.",
+        "error" : {
+            "code" : "BAD_REQUEST",
+            "message" : "Invalid payload."
+
+        }
+    },INVALID_DATE : {
+        "status" : 400,
+        "statusText" : "BAD REQUEST",
+        "message" : "Invalid date, date must be in the range of cutoff and should not be more than the current date.",
+        "error" : {
+            "code" : "BAD_REQUEST",
+            "message" : "Invalid payload."
+
+        }
+    },INVALID_AMOUNT : {
+        "status" : 400,
+        "statusText" : "BAD REQUEST",
+        "message" : "Invalid amount, amount must be within minimum and cap.",
+        "error" : {
+            "code" : "BAD_REQUEST",
+            "message" : "Invalid payload."
 
         }
     }

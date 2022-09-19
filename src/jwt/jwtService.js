@@ -59,10 +59,8 @@ let jwtService = {
             let result = await jwtRepository.getBlockedToken(token);
             return new Promise((resolve, reject)=> {
                 if (result=='') {
-                    console.log("g pa")
                     return resolve(true);
                 } else {
-                    console.log("ekis na")
                     return resolve(false)
                 }
             })
