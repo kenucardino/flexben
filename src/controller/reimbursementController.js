@@ -38,3 +38,36 @@ exports.addReimbursementItemController = async (req ,res) => {
         }
     }
 }
+
+exports.deleteReimbursementItem = async (req, res) => {
+    try {
+        let id = req.query.id;
+        if (id != '' && typeof id != 'undefined') {
+            let result = await reimbursementService.deleteReimbursementItem(id);
+            let statusCode, statusText, message, data;
+            if (result == 'NOT_DRAFT') {
+                statusCode = 204;
+                statusText = 'No Content';
+                message = `Success request but Reimbursement ${id} is not in Draft status`;
+                data = ''
+            } else if (result == 'NO_CONTENT') {
+                statusCode = 204;
+                statusText = 'No Content';
+                message = `Success request but Reimbursement ${id} does not exist`;
+                data = ''
+            } else {
+                statusCode = 200;
+                statusText = "OK";
+                message = `Reimbursement Item ${id} Deleted`;
+                data = {affectedRows : result}
+                
+            }
+            res.send(util.successResponseBuilder(statusCode, statusText, message, {affectedRows : result}, data))
+        } else {
+            res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+    }
+}

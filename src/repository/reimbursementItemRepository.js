@@ -33,6 +33,20 @@ let reimbursementItemRepository = {
                 }
             });
         });
+    },
+    deleteReimbursementItemById : async (id) =>{
+        return new Promise((resolve, reject) => {
+            let query = `
+            DELETE FROM flex_reimbursement_detail WHERE flex_reimbursement_detail_id = ${id}`;
+            connectionPool.query(query, (error, result) => {
+                if (error) {
+                    console.log(error)
+                    reject (error)
+                } else {
+                    resolve (result.affectedRows);
+                }
+            });
+        } );
     }
 
 }

@@ -78,7 +78,32 @@ let reimbursementService = {
             console.log(error)
             return  error;
         }
+    },
+
+    deleteReimbursementItem : async (id) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                //check if existing and if draft
+                let reimbursementItem = await reimbursementItemRepository.getReimbursementItemById(id);
+                if (reimbursementItem !='') {
+                    console.log(reimbursementItem)
+                    if (reimbursementItem[0].status == 'Draft') {
+                        let affectedRows = await reimbursementItemRepository.deleteReimbursementItemById(id);
+                        resolve(affectedRows);
+                    } else {
+                        resolve('NOT_DRAFT')
+                    }
+                } else {
+                    resolve('NO_CONTENT')
+                }
+            } catch (error) {
+                console.log(error);
+                resolve(error);
+            }
+        })
+
     }
 }
+
 
 module.exports = reimbursementService;
