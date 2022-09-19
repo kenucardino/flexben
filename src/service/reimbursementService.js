@@ -29,6 +29,7 @@ let reimbursementService = {
                                 //check if there is existing draft reimbursement
                                 let reimbursement = await reimbursementRepository.getInDraftReimbursementByEmployeeId(employeeId);
                                 let createdItems = {};
+                                let updatedReimbursement = {}
                                 if (reimbursement == '') {
                                     try{
                                     //build Reimbursment Object
@@ -45,7 +46,13 @@ let reimbursementService = {
                                         console.log(error)
                                     }
                                 } else {
-                                    reimbursementItemObject.reimbursementId = reimbursement[0].flex_reimbursement_id;
+                                    try {
+                                        reimbursementItemObject.reimbursementId = reimbursement[0].flex_reimbursement_id;
+                                    } catch (error) {
+                                        
+                                        console.log(error)
+                                    }
+
                                 }
                                 let category = await categoryRepository.getByCode(reimbursementItemObject.categoryCode);
                                 reimbursementItemObject.categoryId = category[0].category_id;
@@ -53,6 +60,13 @@ let reimbursementService = {
                                 let reimbursementItemId = await reimbursementItemRepository.addReimbursementItem(reimbursementItemObject);
                                 //get created reimbursement item
                                 let newReimbursementItem = await reimbursementItemRepository.getReimbursementItemById(reimbursementItemId);
+
+                                reimbursement[0].total_reimbursement_amount = parseFloat(reimbursement[0].total_reimbursement_amount) + parseFloat(amount);
+                                console.log(reimbursement)
+                                let updatedAffectedRows = await reimbursementRepository.updateReimbursement(reimbursement[0]);
+                                updatedReimbursement.affectedRows = updatedAffectedRows;
+                                createdItems.updatedReimbursement = updatedReimbursement;
+                                
                                 createdItems.reimbursementItem = newReimbursementItem;
                                 if(reimbursementItemId !=0){
                                     resolve(createdItems);
@@ -98,7 +112,7 @@ let reimbursementService = {
                 }
             } catch (error) {
                 console.log(error);
-                resolve(error);
+                reject(error);
             }
         })
 
