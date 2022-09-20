@@ -22,4 +22,28 @@ CATEGORY: Books and Subscriptions Claim Category
 CATEGORY: OFFICE SUPPLIES Claim Category
 CATEGORY: TRAINING & TUITION Claim Category
 CATEGORY: Corporate Social Responsibility Claim Category
+CATEGORY: LEAVE BUY BACKEmployee Name: Beck, Jan
+Employee Number: 12034
+Date Submitted: September, 20 2022
+Transaction Number: PWINNOV-3-2022820-47
+Amount: PHP800
+Status: Submitted
+=== DETAILS ===
+CATEGORY: MEDICAL Claim Category
+CATEGORY: APPLIANCE Claim Category
+CATEGORY: Beauty & Wellness Claim Category
+CATEGORY: FOOD, RESTAURANT & GROCERIES Claim Category
+CATEGORY: FASHION Claim Category
+CATEGORY: ENTERTAINMENT Claim Category
+CATEGORY: GADGETS Claim Category
+CATEGORY: TRANSPORTATION Claim Category
+CATEGORY: TRAVEL & LEISURE Claim Category
+CATEGORY: CONNECTIVITY Claim Category
+CATEGORY: Applications and Software Claim Category
+CATEGORY: HOME IMROVEMENTS & FURNITURES Claim Category
+CATEGORY: LIFE INSURANCE Claim Category
+CATEGORY: Books and Subscriptions Claim Category
+CATEGORY: OFFICE SUPPLIES Claim Category
+CATEGORY: TRAINING & TUITION Claim Category
+CATEGORY: Corporate Social Responsibility Claim Category
 CATEGORY: LEAVE BUY BACK

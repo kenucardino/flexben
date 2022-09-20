@@ -43,6 +43,8 @@ exports.addReimbursementItemController = async (req ,res) => {
 
 exports.deleteReimbursementItem = async (req, res) => {
     try {
+        
+        let token = req.headers.authorization.split(" ")[1];
         if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
             let id = req.query.id;
             if (id != '' && typeof id != 'undefined') {
@@ -79,6 +81,7 @@ exports.deleteReimbursementItem = async (req, res) => {
 
 exports.submitReimbursement = async (req, res) => {
     try {
+        let token = req.headers.authorization.split(" ")[1];
         if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
             let id = req.query.id;
             if (id != '' && typeof id != 'undefined') {
@@ -104,6 +107,7 @@ exports.submitReimbursement = async (req, res) => {
 
 exports.printtReimbursement = async (req, res) => {
     try {
+        let token = req.headers.authorization.split(" ")[1];
         if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
             let id = req.query.id;
             if (id != '' && typeof id != 'undefined') {
