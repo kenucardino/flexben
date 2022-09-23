@@ -10,8 +10,10 @@ reimbursementRoute.post('/submit', verifyToken, reimbursementController.submitRe
 
 reimbursementRoute.get('/print', verifyToken, reimbursementController.printReimbursement);
 
+//HR routes
 reimbursementRoute.get('/', verifyToken, verifyRole(constants.HR_AUDIENCE.GET_REIMBURSEMENTS) , reimbursementController.getAllReimbursements);
 reimbursementRoute.get('/search', verifyToken, verifyRole(constants.HR_AUDIENCE.SEARCH_REIMBURSEMENT), reimbursementController.searchReimbursementsByKeywords)
 reimbursementRoute.get('/:reimbursementId', verifyToken, verifyRole(constants.HR_AUDIENCE.GET_REIMBURSEMENTS), reimbursementController.getReimbursementAndItems)
+reimbursementRoute.post('/:reimbursementId/decision', verifyToken, verifyRole(constants.HR_AUDIENCE.DECIDE_REIMBURSEMENT), reimbursementController.decideReimbursement)
 
 module.exports = reimbursementRoute;

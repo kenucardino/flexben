@@ -65,12 +65,12 @@ let reimbursementItemRepository = {
             });
         });
     },
-    updateReimbursementItemByReimbursementIdSubmit : async (id) => {
+    updateReimbursementItemStatusByReimbursementId : async (reimbursementId, status) => {
         return new Promise ((resolve, reject) => {
              let query = `
             UPDATE flex_reimbursement_detail 
-            SET status = 'Submitted'
-            WHERE flex_reimbursement_id = ${id}
+            SET status = '${status}'
+            WHERE flex_reimbursement_id = ${reimbursementId}
             `
             connectionPool.query(query, (error, results) => {
                 if (error) {

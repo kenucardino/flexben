@@ -124,7 +124,7 @@ let reimbursementService = {
                 let parsedAmount = parseFloat(amount);
                 if(operation == constants.UPDATE_REIMBURSEMENT_OPERATION.ADD) {
                     reimbursement[0].total_reimbursement_amount = reimbursementTotalAmount + parsedAmount;
-                }else {
+                }else if (operation == constants.UPDATE_REIMBURSEMENT_OPERATION.DELETE) {
                     reimbursement[0].total_reimbursement_amount = reimbursementTotalAmount - parsedAmount;
                 }
                 resolve(reimbursementRepository.updateReimbursement(reimbursement[0])); 
@@ -149,7 +149,7 @@ let reimbursementService = {
                     reimbursement[0].status = "Submitted";
                     reimbursement[0].date_submitted = dateSubmitted
                     let affectedReimbursement = await reimbursementRepository.updateReimbursement(reimbursement[0]);
-                    let affectedItems = await reimbursementItemRepository.updateReimbursementItemByReimbursementIdSubmit(id)
+                    let affectedItems = await reimbursementItemRepository.updateReimbursementItemStatusByReimbursementId(id, "Submitted")
 
                     resolve({result : { reimbursementId : id, numberOfSubmmittedItems : affectedItems }})
                 }else {
@@ -242,6 +242,27 @@ let reimbursementService = {
                 reject(error);
             }
         })
+    },
+    decideReimbursement : (reimbursementId, action) => {
+        return new Promise(async (resolve, reject) => {
+            if(action == constants.REIMBURSEMENT_DECISTION.APPROVE || action == constants.REIMBURSEMENT_DECISTION.REJECT){
+                let reimbursement = await reimbursementRepository.getReimbursementById(reimbursementId);
+                console.log(reimbursement)
+                if(reimbursement != '' && typeof reimbursement !='undefined'){
+                    if(reimbursement[0].status == "Submitted"){
+                        if(action == constants.REIMBURSEMENT_DECISTION.APPROVE){
+                            reimbursement[0].status = "Approved"
+                        } else if (action == constants.REIMBURSEMENT_DECISTION.REJECT){
+                            reimbursement[0].status = "Rejected"
+                        }
+                        console.log("pasok")
+                        let affectedRole = await reimbursementRepository.updateReimbursement(reimbursement[0]);
+                        let affectedItems = await reimbursementItemRepository.updateReimbursementItemStatusByReimbursementId(reimbursement[0].flex_reimbursement_id, reimbursement[0].status);
+                        resolve({affectedReimbursement : affectedRole, affectedItems : affectedItems});
+                    }else reject("NOT_DRAFT")
+                }else reject(constants.PAYLOAD_ERRORS.BAD_REQUEST);
+            }else reject(constants.PAYLOAD_ERRORS.BAD_REQUEST);
+        });
     }
 }
 

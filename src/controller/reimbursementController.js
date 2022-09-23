@@ -100,10 +100,7 @@ exports.submitReimbursement = async (req, res) => {
                 res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
             }
         }else res.status(403).send(constants.ERR_RESPONSE.FORBIDDEN)
-        
     } catch (error) {
-
-
         res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
     }
 }
@@ -176,6 +173,21 @@ exports.searchReimbursementsByKeywords = async (req, res) => {
         }
         let results = await reimbursementService.searchReimbursementByKeywords(searchKeywordsObject)
         res.send(results);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+    }
+}
+
+exports.decideReimbursement = async (req, res) => {
+    try {
+        let action = req.query.action;
+        let reimbursementId = req.params.reimbursementId;
+        console.log(reimbursementId)
+        if(reimbursementId != '' && typeof reimbursementId != 'undefined' && action != '' && typeof action != 'undefined') {
+            let result = await reimbursementService.decideReimbursement(reimbursementId,action);
+            res.send(result)
+        } else res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
     } catch (error) {
         console.log(error)
         res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
