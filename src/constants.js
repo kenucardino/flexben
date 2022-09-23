@@ -55,7 +55,7 @@ module.exports.ERR_RESPONSE = {
         "statusText" : "FORBIDDEN",
         "message" : "Unauthorized access.",
         "error" : {
-            "code" : "INTERNAL_SERVER_ERROR",
+            "code" : "FORBIDDEN",
             "message" : "Unauthorized access."
 
         }

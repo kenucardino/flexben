@@ -5,7 +5,8 @@ let reimbursementRepository = {
     getReimbursementById : async (id) => {
         return new Promise( (resolve, reject) => {
             let query = `
-            SELECT * FROM flex_reimbursement 
+            SELECT * FROM flex_reimbursement AS fr
+            JOIN employee AS e ON fr.employee_id = e.employee_id
             WHERE flex_reimbursement_id  = ${id};
             `
             connectionPool.query(query, (error, results, fields) => {
@@ -85,15 +86,15 @@ let reimbursementRepository = {
             }); 
         })
     },
-    getAllReimbursmentsSortByStatus : async (status) => {
+    getAllReimbursmentsSortByStatus : async (status, cutOffId) => {
         return new Promise ((resolve, reject) =>{
             let query = `
             SELECT fr.transaction_number, e.employee_number, e.first_name, e.last_name, fr.total_reimbursement_amount, fr.date_submitted, fr.status
             FROM flex_reimbursement AS fr 
             JOIN employee AS e ON fr.employee_id = e.employee_id
+            WHERE flex_cut_off_id = ${cutOffId}
             ORDER BY fr.status = '${status}';
             `;
-            console.log(query)
             connectionPool.query(query, (error, results) => {
                 if (error) {
                     console.log(error)

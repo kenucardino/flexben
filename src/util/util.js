@@ -74,6 +74,29 @@ let util = {
             return error
         }
         
+    },
+    reimbursementAndItemsResponseBuilder : (reimbursementObject, reimbursementItmes) =>{
+        let reimbursementAndItems = {
+            employeeNumber : reimbursementObject.employee_number,
+            employeeName : `${reimbursementObject.last_name + ", " + reimbursementObject.first_name}`,
+            dateSubmitted : reimbursementObject.date_submitted,
+            reimbursementItems : [],
+            totalReimbursementAmount : reimbursementObject.total_reimbursement_amount,
+            status : reimbursementObject.status
+        };
+        
+        reimbursementItmes.forEach(item => {
+            let reimbursementItem = {
+                Date : item.date_added,
+                OrNumber : item.or_number,
+                nameOfEstablishment : item.name_of_establishment,
+                tinOfEstablishment : item.tin_of_establishment,
+                amount : item.amount,
+                status : item.status
+            }
+            reimbursementAndItems.reimbursementItems.push(reimbursementItem);
+        });
+        return reimbursementAndItems;
     }
 
 }

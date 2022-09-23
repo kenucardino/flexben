@@ -5,7 +5,8 @@ const reimbursementRepository = require('../repository/reimbursementRepository')
 const reimbursementItemRepository = require('../repository/reimbursementItemRepository');
 const util = require('../util/util');
 const constants = require('../constants');
-const fs = require('fs/promises')
+const fs = require('fs/promises');
+const { resolve } = require('path');
 
 let reimbursementService = {
     addReimbursementItem : async (employeeId, reimbursementItemObject, cutOffId) => {
@@ -147,7 +148,6 @@ let reimbursementService = {
                     reimbursement[0].transaction_number = transactionNumber;
                     reimbursement[0].status = "Submitted";
                     reimbursement[0].date_submitted = dateSubmitted
-                    console.log(reimbursement);
                     let affectedReimbursement = await reimbursementRepository.updateReimbursement(reimbursement[0]);
                     let affectedItems = await reimbursementItemRepository.updateReimbursementItemByReimbursementIdSubmit(id)
 
@@ -184,7 +184,6 @@ let reimbursementService = {
                 let reimbursementAndDetails = await reimbursementRepository.getReimbursementAndDetailsById(id);
                 let reimbursement = reimbursementAndDetails[0];
                 if(reimbursement != '' && typeof reimbursement != 'undefined') {
-                    console.log(reimbursement)
                     const header = util.documentHeaderBuilder(reimbursement);
                     let results = await reimbursementItemRepository.getCategoriesWithReimbursementItems(reimbursement.flex_reimbursement_id);
                     const body = util.documentBodyBuilder(results);
@@ -203,11 +202,23 @@ let reimbursementService = {
         });
 
     },
-    getAllReimbursementsOrderByStatus : (status) => {
+    getAllReimbursementsOrderByStatus : (status, cutOffId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                let reimbursements = await reimbursementRepository.getAllReimbursmentsSortByStatus(status);
+                let reimbursements = await reimbursementRepository.getAllReimbursmentsSortByStatus(status, cutOffId);
                 resolve(reimbursements);
+            } catch (error) {
+                console.log(error)
+                reject(error);
+            }
+        });
+    },
+    getReimbursementandItmesById : (reimbursementId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const reimbursement = await reimbursementRepository.getReimbursementById(reimbursementId);
+                const reimbursementItems = await reimbursementItemRepository.getReimbursementItemByReimbursementId(reimbursement[0].flex_reimbursement_id);
+                resolve(util.reimbursementAndItemsResponseBuilder(reimbursement[0], reimbursementItems))
             } catch (error) {
                 console.log(error)
                 reject(error);

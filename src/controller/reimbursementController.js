@@ -136,11 +136,31 @@ exports.printReimbursement = async (req, res) => {
     }
 }
 
-exports.getAllReimbursementsOrderByStatus = async (req, res) => {
+exports.getAllReimbursements = async (req, res) => {
     try {
-        const status = req.query.reimbursementStatus ? req.query.reimbursementStatus : '';
-        const reimbursements = await reimbursementService.getAllReimbursementsOrderByStatus(status);
-        res.send(util.successResponseBuilder(200, "OK", "Reimbursements fetched", reimbursements))
+        const cutOffId = req.query.cutOffId;
+        if(cutOffId != '' && typeof cutOffId != 'undefined'){
+            const status = req.query.reimbursementStatus ? req.query.reimbursementStatus : '';
+            const reimbursements = await reimbursementService.getAllReimbursementsOrderByStatus(status, cutOffId);
+            res.send(util.successResponseBuilder(200, "OK", "Reimbursements fetched", reimbursements))
+        }else{
+            res.send(400).send(constants.ERR_RESPONSE.BAD_REQUEST);   
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+    }
+}
+
+exports.getReimbursementAndItems = async (req, res) => {
+    try {
+        const reimbursementId = req.params.reimbursementId;
+        if(reimbursementId != '' && typeof reimbursementId != 'undefined'){
+            let reimbursementAndItems = await reimbursementService.getReimbursementandItmesById(reimbursementId);
+            res.send(util.successResponseBuilder(200, 'OK', 'Reimbursement and details fetched', reimbursementAndItems))
+        }else {
+            res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
+        }
     } catch (error) {
         console.log(error)
         res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
