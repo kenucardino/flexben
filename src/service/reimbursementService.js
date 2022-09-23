@@ -224,6 +224,24 @@ let reimbursementService = {
                 reject(error);
             }
         });
+    },
+    searchReimbursementByKeywords : (searchKeywordsObject) => {
+        return new Promise(async (resolve, reject) =>{
+            try {
+                let result=[];
+                const reimbursements = await reimbursementRepository.searchReimbursement(searchKeywordsObject);
+                for (const reimbursement of reimbursements) {
+                    let reimbursementItems = await reimbursementItemRepository.getReimbursementItemByReimbursementId(reimbursement.flex_reimbursement_id);
+                    let formattedReimbursement = util.reimbursementAndItemsResponseBuilder(reimbursement, reimbursementItems)
+                    result.push(formattedReimbursement)   
+                }
+                console.log("end")
+                resolve(result);
+            } catch (error) {
+                console.log(error)
+                reject(error);
+            }
+        })
     }
 }
 

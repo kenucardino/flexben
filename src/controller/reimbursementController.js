@@ -166,3 +166,18 @@ exports.getReimbursementAndItems = async (req, res) => {
         res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
     }
 }
+
+exports.searchReimbursementsByKeywords = async (req, res) => {
+    try {
+        let searchKeywordsObject = {
+            firstName : req.query.firstName,
+            lastName : req.query.lastName,
+            employeeId : req.query.employeeId
+        }
+        let results = await reimbursementService.searchReimbursementByKeywords(searchKeywordsObject)
+        res.send(results);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+    }
+}

@@ -104,6 +104,26 @@ let reimbursementRepository = {
                 }
             }); 
         });
+    },
+    searchReimbursement : async (searchKeywords) => {
+        return new Promise((resolve, reject) => {
+            console.log(searchKeywords)
+            let firstName = searchKeywords.firstName ? searchKeywords.lastName : '';
+            let lastName = searchKeywords.lastName ? searchKeywords.lastName : '';
+            let employeeId = searchKeywords.employeeId ? searchKeywords.employeeId : '';
+            let query = `SELECT * FROM flex_reimbursement AS fr
+            JOIN employee AS e ON fr.employee_id = e.employee_id
+            WHERE e.first_name LIKE '%${firstName}%' AND  e.last_name LIKE '%${lastName}%' AND e.employee_id LIKE '%${employeeId}%';
+            `;
+            connectionPool.query(query, (error, results) => {
+                if (error) {
+                    console.log(error)
+                    reject (error)
+                } else {
+                    resolve (results);
+                }
+            }); 
+        });
     }
 }
 
