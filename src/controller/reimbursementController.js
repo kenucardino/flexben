@@ -2,11 +2,12 @@ const reimbursementService = require('../service/reimbursementService');
 const jwtService = require('../jwt/jwtService')
 const constants = require('../constants');
 const util = require('../util/util');
+const path = require('path');
 
 exports.addReimbursementItemController = async (req ,res) => {
     try {       
         let token = req.headers.authorization.split(" ")[1];
-        if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
+        if (jwtService.getAudienceFromToken(token).includes(constants.EMPLOYEE_AUDIENCE.GET_ALL_CATEGORIES)){
             let reimbursementItemObejct = req.body.reimbursementItem;
             let cutOffId = req.body.cutOffId;
             let employeeEmail = jwtService.getUserNameFromToken(token);
@@ -45,7 +46,7 @@ exports.deleteReimbursementItem = async (req, res) => {
     try {
         
         let token = req.headers.authorization.split(" ")[1];
-        if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
+        if (jwtService.getAudienceFromToken(token).includes(constants.EMPLOYEE_AUDIENCE.GET_ALL_CATEGORIES)){
             let id = req.query.id;
             if (id != '' && typeof id != 'undefined') {
                 let result = await reimbursementService.deleteReimbursementItem(id);
@@ -82,14 +83,44 @@ exports.deleteReimbursementItem = async (req, res) => {
 exports.submitReimbursement = async (req, res) => {
     try {
         let token = req.headers.authorization.split(" ")[1];
-        if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
+        if (jwtService.getAudienceFromToken(token).includes(constants.EMPLOYEE_AUDIENCE.GET_ALL_CATEGORIES)){
             let id = req.query.id;
             if (id != '' && typeof id != 'undefined') {
                 try {
-                    
                 let result = await reimbursementService.submitReimbursement(id);
                 res.send(util.successResponseBuilder(200, "OK", `Reimbursement id ${result.reimbursementId} submitted`, result))
                 } catch (error) {
+                    if(error == constants.PAYLOAD_ERRORS.INVALID_REIMBURSEMENT) {
+                        res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
+                    }else {
+                        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+                    }
+                }
+            }else {
+                res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
+            }
+        }else res.status(403).send(constants.ERR_RESPONSE.FORBIDDEN)
+        
+    } catch (error) {
+
+
+        res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
+    }
+}
+
+exports.printReimbursement = async (req, res) => {
+    try {
+        let token = req.headers.authorization.split(" ")[1];
+        if (jwtService.getAudienceFromToken(token).includes(constants.EMPLOYEE_AUDIENCE.GET_ALL_CATEGORIES)){
+            let id = req.query.id;
+            if (id != '' && typeof id != 'undefined') {
+                try {
+                    let result = await reimbursementService.printReimbursement(id);
+                    res.sendFile(path.resolve(result));
+                } catch (error) {
+                    if(error == constants.PAYLOAD_ERRORS.INVALID_REIMBURSEMENT){
+                        res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
+                    }
                     console.log(error)
                     res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
                 }
@@ -105,27 +136,13 @@ exports.submitReimbursement = async (req, res) => {
     }
 }
 
-exports.printtReimbursement = async (req, res) => {
+exports.getAllReimbursementsOrderByStatus = async (req, res) => {
     try {
-        let token = req.headers.authorization.split(" ")[1];
-        if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
-            let id = req.query.id;
-            if (id != '' && typeof id != 'undefined') {
-                try {
-                    let result = await reimbursementService.printReimbursement(id);
-                    res.send(result)
-                } catch (error) {
-                    console.log(error)
-                    res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
-                }
-            }else {
-                res.status(400).send(constants.ERR_RESPONSE.BAD_REQUEST);
-            }
-        }else res.status(403).send(constants.ERR_RESPONSE.FORBIDDEN)
-        
+        const status = req.query.reimbursementStatus ? req.query.reimbursementStatus : '';
+        const reimbursements = await reimbursementService.getAllReimbursementsOrderByStatus(status);
+        res.send(util.successResponseBuilder(200, "OK", "Reimbursements fetched", reimbursements))
     } catch (error) {
         console.log(error)
         res.status(500).send(constants.ERR_RESPONSE.INTERNAL_SERVER_ERROR)
-        
     }
 }

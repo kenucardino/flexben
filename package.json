@@ -16,6 +16,7 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "path": "^0.12.7",
     "routes": "^2.1.0",
     "validate-date": "^2.0.0"
   }

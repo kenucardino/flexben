@@ -5,8 +5,7 @@ const reimbursementRepository = require('../repository/reimbursementRepository')
 const reimbursementItemRepository = require('../repository/reimbursementItemRepository');
 const util = require('../util/util');
 const constants = require('../constants');
-const fs = require('fs');
-
+const fs = require('fs/promises')
 
 let reimbursementService = {
     addReimbursementItem : async (employeeId, reimbursementItemObject, cutOffId) => {
@@ -138,7 +137,7 @@ let reimbursementService = {
     submitReimbursement : async (id) => {
         return new Promise (async (resolve, reject) =>{
             let reimbursement = await reimbursementRepository.getReimbursementById(id);
-            if(reimbursement != ''){
+            if(reimbursement != '' && typeof reimbursement != 'undefined'){
                 let cutOff = await cutOffRepository.getCutOffById(reimbursement[0].flex_cut_off_id);
                 let capAmount = cutOff.cut_off_cap_amount;
                 //Check if total amount is <= capamount
@@ -157,15 +156,14 @@ let reimbursementService = {
                     reject("CAP reached")
                 }
             }else {
-                //TODO REJECT ERROr
-                reject(error)
+                reject(constants.PAYLOAD_ERRORS.INVALID_REIMBURSEMENT)
             }
         });
     },
     generateTransactionNumber :  (id, dateSubmitted) => {
         return new Promise (async (resolve, reject) =>{
             try{
-                    let result = await reimbursementRepository.getReimbursementAndDetails(id);
+                    let result = await reimbursementRepository.getReimbursementAndDetailsById(id);
                     let companyCode = result[0].code.toString();
                     let cutOffId = result[0].flex_cycle_cutoff_id.toString();
                     let reimbursementId = result[0].flex_reimbursement_id.toString();
@@ -180,75 +178,41 @@ let reimbursementService = {
             }
         });
     },
-    printReimbursement : async (id) => {
+    printReimbursement: async (id) => {
         return new Promise(async (resolve, reject) => {
             try {
-                let result = await reimbursementRepository.getReimbursementAndDetails(id);
-                let reimbursement = result[0];
-                let employeeName = reimbursement.last_name + ", "+ reimbursement.first_name;
-                let employeeNumber = reimbursement.employee_number;
-                let dateSubmitted = reimbursement.date_submitted;
-                const monthArray = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-                let year = new Date(dateSubmitted).getFullYear();
-                let month = monthArray[new Date(dateSubmitted).getMonth()]
-                let date = new Date(dateSubmitted).getDate();
-                dateSubmitted = month+', '+ date + ' ' + year;
-                let transactionNumber = reimbursement.transaction_number;
-                let amount = reimbursement.total_reimbursement_amount;
-                let status = reimbursement.status;
-                var header = `Employee Name: ${employeeName}\nEmployee Number: ${employeeNumber}\nDate Submitted: ${dateSubmitted}\nTransaction Number: ${transactionNumber}\nAmount: PHP${amount}\nStatus: ${status}`;
-                var body ="=== DETAILS ==="
-                let categories = await categoryRepository.getAll();
-                let reimbursementItems;
-                categories.forEach(async category => {
-                    try{
-                        body += `\nCATEGORY: ${category.name}`;
-                        reimbursementItems = await reimbursementItemRepository.getReimbursementItemByCategoryId(category.category_id);
-                        header+="hallo"
-                        console.log(category.name)
-                        if(reimbursementItems ==''){
-                            body.concat(body, "N/A")
-                            console.log("N/A")
-                        }else{
-                            console.log(reimbursementItems)
-                        }
-                        let counter = 1;
-                        body = body + `testing` 
-                        if(reimbursementItems[0] != ''){
-                            // console.log('testing')
-                            body += "testing" 
-                            reimbursementItems.forEach(item => {
-                                body += `Item #${counter}
-                                Date: ${item.date_added}
-                                OR number: ${item.or_number}
-                                Name of Establishment: ${item.name_of_establishment}
-                                TIN of Establishment: ${item.tin_of_establishment}
-                                Amount: Php${item.amount}
-                                Status: ${item.status}
-                                `
-                                counter++
-                            });
-                            
-                        }else {
-                            body += "N/A"
-                        }
-                    }catch(error){
-                        console.log(error)
-                    }
-                });
-                // resolve(header)
-                fs.appendFile(`${employeeName}reimbursement.txt`,header +'\n'+ body,  function (err) {
-                    if (err) throw err;
-                    console.log('Saved!');
-                  });
-                resolve(header +'\n'+ body)
-    
+                let reimbursementAndDetails = await reimbursementRepository.getReimbursementAndDetailsById(id);
+                let reimbursement = reimbursementAndDetails[0];
+                if(reimbursement != '' && typeof reimbursement != 'undefined') {
+                    console.log(reimbursement)
+                    const header = util.documentHeaderBuilder(reimbursement);
+                    let results = await reimbursementItemRepository.getCategoriesWithReimbursementItems(reimbursement.flex_reimbursement_id);
+                    const body = util.documentBodyBuilder(results);
+                    const content = header + '\n' + body;
+                    // resolve(content);
+                    const fileName = await util.generateReimbursementFile(reimbursement, content)
+                    resolve(fileName);
+                } else {
+                    reject(constants.PAYLOAD_ERRORS.INVALID_REIMBURSEMENT)
+                }
+                // res.sendFile(fileName)
+            } catch (error) {
+                console.log(error);
+                reject(error);
+            }
+        });
+
+    },
+    getAllReimbursementsOrderByStatus : (status) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let reimbursements = await reimbursementRepository.getAllReimbursmentsSortByStatus(status);
+                resolve(reimbursements);
             } catch (error) {
                 console.log(error)
                 reject(error);
             }
-        } );
-        
+        });
     }
 }
 

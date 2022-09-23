@@ -46,9 +46,9 @@ let jwtRepository =  {
                     let userAccountId = user[0].account_id;
                     let query = `
                     INSERT INTO blocked_token (token, account_id) VALUES ('${token}', ${userAccountId});`;
+                    console.log(query)
                     connectionPool.query(query, (error, results)=>{
                         if(error) {
-                            console.log(error)
                             reject(error);
                         } else {
                             resolve(results.affectedRows);

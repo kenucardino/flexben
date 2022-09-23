@@ -66,7 +66,7 @@ let reimbursementRepository = {
             });  
         })
     },
-    getReimbursementAndDetails : async (id) =>{
+    getReimbursementAndDetailsById : async (id) =>{
         return new Promise ((resolve, reject) => {
             let query = `
             SELECT com.code, fcf.flex_cycle_cutoff_id, fr.flex_reimbursement_id, fr.status , e.last_name, e.first_name, e.employee_number, fr.total_reimbursement_amount, fr.transaction_number, fr.date_submitted  
@@ -84,6 +84,25 @@ let reimbursementRepository = {
                 }
             }); 
         })
+    },
+    getAllReimbursmentsSortByStatus : async (status) => {
+        return new Promise ((resolve, reject) =>{
+            let query = `
+            SELECT fr.transaction_number, e.employee_number, e.first_name, e.last_name, fr.total_reimbursement_amount, fr.date_submitted, fr.status
+            FROM flex_reimbursement AS fr 
+            JOIN employee AS e ON fr.employee_id = e.employee_id
+            ORDER BY fr.status = '${status}';
+            `;
+            console.log(query)
+            connectionPool.query(query, (error, results) => {
+                if (error) {
+                    console.log(error)
+                    reject (error)
+                } else {
+                    resolve (results);
+                }
+            }); 
+        });
     }
 }
 

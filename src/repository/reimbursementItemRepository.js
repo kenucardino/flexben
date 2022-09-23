@@ -67,10 +67,6 @@ let reimbursementItemRepository = {
     },
     updateReimbursementItemByReimbursementIdSubmit : async (id) => {
         return new Promise ((resolve, reject) => {
-            // let query = `
-            // UPDATE flex_reimbursement_detail 
-            // SET flex_reimbursement_id =${reimbursementItemObject.flex_reimbursement_id}, or_number ='${reimbursementItemObject.or_number}', name_of_establishment ='${reimbursementItemObject.name_of_establishment}', tin_of_establishment ='${reimbursementItemObject.tin_of_establishment}', amount =${reimbursementItemObject.amount}, category_id =${reimbursementItemObject.category_id}, status ='${reimbursementItemObject.status}', date_added = '${reimbursementItemObject.date_added}'
-            // `
              let query = `
             UPDATE flex_reimbursement_detail 
             SET status = 'Submitted'
@@ -101,7 +97,26 @@ let reimbursementItemRepository = {
                 }
             });
         });
-    } 
+    },
+    getCategoriesWithReimbursementItems : async (reimbursementItemId) => {
+        return new Promise((resolve, reject) => {
+            let query = `
+            SELECT c.category_id, c.name, frd.flex_reimbursement_detail_id, frd.flex_reimbursement_id, frd.date_added, frd.or_number,  frd.name_of_establishment, frd.tin_of_establishment, frd.amount, frd.status 
+            FROM category AS c 
+            LEFT JOIN flex_reimbursement_detail as frd ON frd.category_id = c.category_id 
+            WHERE frd.flex_reimbursement_detail_id IS NULL OR frd.flex_reimbursement_id = ${reimbursementItemId}
+            ORDER BY c.category_id;
+            `
+            connectionPool.query(query, (error, results, fields) => {
+                if (error) {
+                    console.log(error)
+                    reject (error)
+                } else {
+                    resolve (results);
+                }
+            });
+        })
+    }
     
 }
 

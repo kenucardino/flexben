@@ -15,4 +15,13 @@ exports.verifyToken = async (req, res, next) => {
             }else res.status(401).send(constants.ERR_RESPONSE.INVALID_TOKEN);
         } else res.status(401).send(constants.ERR_RESPONSE.INVALID_TOKEN);
     } else res.status(401).send(constants.ERR_RESPONSE.INVALID_TOKEN);
-    };
+};
+
+exports.verifyRole = (scope) => {
+    return (req, res, next) => {
+        const token = req.headers.authorization.split(" ")[1];
+        if(jwtService.getAudienceFromToken(token).includes(scope)){
+            next()
+        }else res.status(403).send(constants.ERR_RESPONSE.FORBIDDEN)
+    }
+}

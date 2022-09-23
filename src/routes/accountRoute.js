@@ -1,6 +1,6 @@
 const express = require('express');
 const accountController = require('../controller/accountController');
-const { verifyToken } = require('../middleware/jwtMiddleware');
+const { verifyToken } = require('../middleware/customMiddleware');
 const accountRouter = express.Router();
 
 accountRouter.post('/login',  accountController.login);

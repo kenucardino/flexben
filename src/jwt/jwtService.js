@@ -55,18 +55,18 @@ let jwtService = {
         }
     },
     isTokenBlocked : async (token) => {
-        try{
-            let result = await jwtRepository.getBlockedToken(token);
-            return new Promise((resolve, reject)=> {
-                if (result=='') {
-                    return resolve(true);
-                } else {
-                    return resolve(false)
-                }
-            })
-        } catch (error) {
-            return error;
-        }
+        return new Promise(async (resolve, reject)=> {
+            try{
+                let result = await jwtRepository.getBlockedToken(token);
+                    if (result=='') {
+                        resolve(true);
+                    } else {
+                        resolve(false)
+                    }
+            } catch (error) {
+                reject(error);
+            }
+        })
     }
 }
 

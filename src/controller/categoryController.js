@@ -6,7 +6,7 @@ const util = require('../util/util');
 exports.getAllCategories = async (req, res) =>{
     try {        
         let token = req.headers.authorization.split(" ")[1];
-        if (jwtService.getAudienceFromToken(token).includes(constants.AUDIENCE.GET_ALL_CATEGORIES)){
+        if (jwtService.getAudienceFromToken(token).includes(constants.EMPLOYEE_AUDIENCE.GET_ALL_CATEGORIES)){
             let categories = await categoryService.getAllCategories();
             res.send(util.successResponseBuilder(200,"OK", "Categories fetched", categories));
         
